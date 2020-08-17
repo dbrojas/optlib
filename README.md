@@ -10,6 +10,21 @@ A library to price financial options using closed-form solutions written in Pyth
 
 ## Installation
 
+To install `optlib` clone the repository
+```
+git clone https://github.com/BartolomeD/optlib.git
+```
+
+Create a virtual environment
+```
+python3 -m venv env
+source env/bin/activate
+```
+
+and in the `optlib` directory execute
+```
+python setup.py install
+```
 
 # Closed Form Option Pricing Formulas
 ## Generalized Black Scholes (GBS) and similar models
