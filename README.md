@@ -66,10 +66,10 @@ Pricing Formulas
 8. `american_76()` American Commodity Options
 
 Implied Volatility Formulas
-9.  `euro_implied_vol()` Implied volatility calculator for European options
-10.  `euro_implied_vol_76()` Implied volatility calculator for European commodity options
-11.  `amer_implied_vol()` Implied volatility calculator for American options
-12.  `amer_implied_vol_76()` Implied volatility calculator for American commodity options
+9. `euro_implied_vol()` Implied volatility calculator for European options
+10. `euro_implied_vol_76()` Implied volatility calculator for European commodity options
+11. `amer_implied_vol()` Implied volatility calculator for American options
+12. `amer_implied_vol_76()` Implied volatility calculator for American commodity options
 
 Note:
 In honor of the `black_76` model, the `_76` on the end of functions indicates a commodity option.
@@ -103,35 +103,26 @@ An important concept of Black Scholes models is that the actual way that the und
 
 The generalized Black Scholes formula can found below (see Figure 1). While these formulas may look complicated at first glance, most of the terms can be found as part of an options contract or are prices readily available in the market.  The only term that is difficult to calculate is the implied volatility (σ). Implied volatility is typically calculated using prices of other options that have recently been traded.
 
-*Call Price*
+<style>
+{
+    display:block; 
+    float:none; 
+    margin-left:auto;
+    margin-right:auto;
+    width:60%;
+}
+</style>
 
-$$
-\begin{equation}
-C = Fe^{(b-r)T} N(D_1) - Xe^{-rT} N(D_2)
-\end{equation}
-$$
+*Call Price*
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?C&space;=&space;Fe^{(b-r)T}&space;N(D_1)&space;-&space;Xe^{-rT}&space;N(D_2)" title="C = Fe^{(b-r)T} N(D_1) - Xe^{-rT} N(D_2)" /></p>
 
 *Put Price*
-
-$$
-\begin{equation}
-P = Xe^{-rT} N(-D_2) - Fe^{(b-r)T} N(-D_1)
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?P&space;=&space;Xe^{-rT}&space;N(-D_2)&space;-&space;Fe^{(b-r)T}&space;N(-D_1)" title="P = Xe^{-rT} N(-D_2) - Fe^{(b-r)T} N(-D_1)" /></p>
 
 with the following intermediate calculations
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?D_1&space;=&space;\frac{ln\frac{F}{X}&space;&plus;&space;(b&plus;\frac{V^2}{2})T}{V*\sqrt{T}}" title="D_1 = \frac{ln\frac{F}{X} + (b+\frac{V^2}{2})T}{V*\sqrt{T}}" /></p>
 
-$$
-\begin{equation}
-D_1 = \frac{ln\frac{F}{X} + (b+\frac{V^2}{2})T}{V*\sqrt{T}}
-\end{equation}
-$$
-
-$$
-\begin{equation}
-D_2 = D_1 - V\sqrt{T}
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?D_2&space;=&space;D_1&space;-&space;V\sqrt{T}" title="D_2 = D_1 - V\sqrt{T}" /></p>
 
 and the following inputs
 
@@ -146,6 +137,7 @@ and the following inputs
 |    q    |    **Continuous Yield**. Used in the Merton model, this is the continuous yield of the underlying security. Option holders are typically not paid dividends or other payments until they exercise the option. As a result, this factor decreases the value of an option.    |
 |    r    |    **Risk Free Rate**. This is expected return on a risk-free investment. This is commonly a approximated by the yield on a low-risk government bond or the rate that large banks borrow between themselves (LIBOR). The rate depends on tenor of the cash flow. For example, a 10-year risk-free bond is likely to have a different rate than a 20-year risk-free bond.    |
 |    rf    |    **Foreign Risk Free Rate**. Used in the Garman-Kohlhagen model, this is the risk free rate of the foreign currency. Each currency will have a risk free rate.    |
+
 **Figure 1.** Generalized Black Scholes Formula.
 
 The correction term, b, varies by formula – it differentiates the various Black Scholes formula from one another (see Figure 2). The cost of carry refers to the cost of “carrying” or holding a position. For example, holding a bond may result in earnings from interest, holding a stock may result in stock dividends, or the like. Those payments are made to the owner of the underlying asset and not the owner of the option. As a result, they reduce the value of the option.
@@ -157,8 +149,8 @@ The correction term, b, varies by formula – it differentiates the various Blac
 | 3.   | `black_76`         | b = 0             |
 | 4.   | `garman_kohlhagen` | b = r - rf        |
 | 5.   | `asian_76`         | b = 0, modified V |
-**Figure 2.** Generalized Black Scholes Cost of Carry Adjustment.
 
+**Figure 2.** Generalized Black Scholes Cost of Carry Adjustment.
 
 ### Asian Volatility Adjustment
 
@@ -169,19 +161,10 @@ The average of a set of random numbers (prices in this case) will have a lower d
 In the case of Asian options on futures, it is possible to use a modified Black-76 formula that replaces the implied volatility term with an adjusted implied volatility of the average price.  As long as the first day of the averaging period is in the future, the following formula can be used to value Asian options (see Figure 3).
 
 *Asian Adjusted Volatility*
-$$
-\begin{equation}
-V_a = \sqrt{\frac{ln(M)}{T}}
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?V_a&space;=&space;\sqrt{\frac{ln(M)}{T}}" title="V_a = \sqrt{\frac{ln(M)}{T}}" /></p>
 
 with the intermediate calculation
-
-$$
-\begin{equation}
-M = \frac{2e^{V^2T} - 2e^{V^2T}[1+V^2(T-t)]}{V^4(T-t)^2}
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?M&space;=&space;\frac{2e^{V^2T}&space;-&space;2e^{V^2T}[1&plus;V^2(T-t)]}{V^4(T-t)^2}" title="M = \frac{2e^{V^2T} - 2e^{V^2T}[1+V^2(T-t)]}{V^4(T-t)^2}" /></p>
 
 | Symbol | Meaning |
 |--------|-----------------------------------------------------------------------------------------------------------------|
@@ -204,17 +187,9 @@ The payoff of a spread option is show in Figure 4.
 
 **Figure 4.** Spread Option Payoff.
 
-$$
-\begin{equation}
-C = max[F_1 - F_2 - X, 0]
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?C&space;=&space;max[F_1&space;-&space;F_2&space;-&space;X,&space;0]" title="C = max[F_1 - F_2 - X, 0]" /></p>
 
-$$
-\begin{equation}
-P = max[X - (F_1 - F_2), 0]
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?P&space;=&space;max[X&space;-&space;(F_1&space;-&space;F_2),&space;0]" title="P = max[X - (F_1 - F_2), 0]" raw=true /></p>
 
 Where
 
@@ -228,68 +203,34 @@ Where
 
 This can be algebraically manipulated as shown in Figure 5.
 
-$$
-\begin{equation}
-C = max \biggl[\frac{F_1}{F_2+X}-1,0 \biggr](F_2 + X)
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?C&space;=&space;max&space;\biggl[\frac{F_1}{F_2&plus;X}-1,0&space;\biggr](F_2&space;&plus;&space;X)" title="C = max \biggl[\frac{F_1}{F_2+X}-1,0 \biggr](F_2 + X)" /></p>
 
-$$
-\begin{equation}
-P = max \biggl[1-\frac{F_1}{F_2+X},0 \biggr](F_2 + X)
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?P&space;=&space;max&space;\biggl[1-\frac{F_1}{F_2&plus;X},0&space;\biggr](F_2&space;&plus;&space;X)" title="P = max \biggl[1-\frac{F_1}{F_2+X},0 \biggr](F_2 + X)" /></p>
 
 **Figure 5.** - Spread Option Payoff, Manipulated.
 
 This allows Kirk’s approximation to model the distribution of the spread as the ratio of the price of asset 1 over the price of asset 2 plus the strike price. This ratio can then be converted into a formula very similar to the Generalized Black Scholes formulas. In fact, this is the Black Scholes formula shown above with the addition of a (F_2 + X) term (see Figure 6).
 
 *Ratio of prices*
-$$
-\begin{equation}
-F = \frac{F_1}{F_2 + X}
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?F&space;=&space;\frac{F_1}{F_2&space;&plus;&space;X}" title="F = \frac{F_1}{F_2 + X}" /></p>
 
 The ratio implies that the option is profitable to exercise (*in the money*) whenever the ratio of prices (F in the formula above) is greater than 1. This occurs the cost of the finished product (F_1) exceeds total cost of the raw materials (F_2) and the conversion cost (X). This requires a modification to the Call/Put Price formulas and to the D_1 formula. Because the option is in the money when F>1, the "strike" price used in inner square brackets of the Call/Put Price formulas and the D1 formula is set to 1.
 
 *Spread Option Call Price*
-
-$$
-\begin{equation}
-C = (F_2 + X)\biggl[Fe^{(b-r)T} N(D_1) - e^{-rT} N(D_2)\biggr]
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?C&space;=&space;(F_2&space;&plus;&space;X)\biggl[Fe^{(b-r)T}&space;N(D_1)&space;-&space;e^{-rT}&space;N(D_2)\biggr]" title="C = (F_2 + X)\biggl[Fe^{(b-r)T} N(D_1) - e^{-rT} N(D_2)\biggr]" /></p>
 
 *Spread Option Put Price*
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?P&space;=&space;(F_2&space;&plus;&space;X)\biggl[e^{-rT}&space;N(-D_2)&space;-&space;Fe^{(b-r)T}&space;N(-D_1)\biggr]" title="P = (F_2 + X)\biggl[e^{-rT} N(-D_2) - Fe^{(b-r)T} N(-D_1)\biggr]" /></p>
 
-$$
-\begin{equation}
-P = (F_2 + X)\biggl[e^{-rT} N(-D_2) - Fe^{(b-r)T} N(-D_1)\biggr]
-\end{equation}
-$$
-
-$$
-\begin{equation}
-D_1 = \frac{ln(F) + (b+\frac{V^2}{2})T}{V*\sqrt{T}}
-\end{equation}
-$$
-
-$$
-\begin{equation}
-D_2 = D_1 - V\sqrt{T}
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?D_1&space;=&space;\frac{ln(F)&space;&plus;&space;(b&plus;\frac{V^2}{2})T}{V*\sqrt{T}}" title="D_1 = \frac{ln(F) + (b+\frac{V^2}{2})T}{V*\sqrt{T}}" /></p>
+    
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?D_2&space;=&space;D_1&space;-&space;V\sqrt{T}" title="D_2 = D_1 - V\sqrt{T}" /></p>
 
 **Figure 6.** Kirk's Approximation Ratio.
 
 The key complexity is determining the appropriate volatility that needs to be used in the equation. The “approximation” which defines Kirk’s approximation is the assumption that the ratio of two log-normal distributions is normally distributed. That assumption makes it possible to estimate the volatility needed for the modified Black Scholes style equation (see Figure 7).
 
-$$
-\begin{equation}
-V = \sqrt{ V_1^{2}+ \biggl[V_2\frac{F_2}{F_2+X}\biggr]^2 - 2ρ V_1 V_2 \frac{F_2}{F_2+X} }
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?V&space;=&space;\sqrt{&space;V_1^{2}&plus;&space;\biggl[V_2\frac{F_2}{F_2&plus;X}\biggr]^2&space;-&space;2\rho&space;V_1&space;V_2&space;\frac{F_2}{F_2&plus;X}&space;}" title="V = \sqrt{ V_1^{2}+ \biggl[V_2\frac{F_2}{F_2+X}\biggr]^2 - 2\rho V_1 V_2 \frac{F_2}{F_2+X} }" /></p>
 
 |    Symbol    |    Meaning    |
 |--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -355,19 +296,11 @@ There is no exact closed-form solution for American options. However, there are 
 #### Put-Call Parity
 Because of Put/Call parity, it is possible to use a call valuation formula to calculate the value of a put option.
 
-$$
-\begin{equation}
-P(S,X,T,r,b,V) = C(X,S,T,r-b,-b,V)
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?P(S,X,T,r,b,V)&space;=&space;C(X,S,T,r-b,-b,V)" title="P(S,X,T,r,b,V) = C(X,S,T,r-b,-b,V)" /></p>
 
 or using the order of parameters used in this library:
 
-$$
-\begin{equation}
-P(X,S,T,b,r,V) = C(S,X,T,-b,r-b,V)
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?P(X,S,T,b,r,V)&space;=&space;C(S,X,T,-b,r-b,V)" title="P(X,S,T,b,r,V) = C(S,X,T,-b,r-b,V)" /></p>
 
 #### Bjerksund Stensland 1993 (BS1993)
 There is no closed form solution for American options, and there are multiple people who have developed closed-form approximations to value American options. This is one such approximation. However, this approximation is no longer in active use by the public interface. It is primarily included as a secondary test on the BS2002 calculation. This function uses a numerical approximation to estimate the value of an American option. It does this by estimating a early exercise boundary and analytically estimating the probability of hitting that boundary. This uses the same inputs as a Generalized Black Scholes model:
@@ -383,52 +316,23 @@ There is no closed form solution for American options, and there are multiple pe
 
 _Intermediate Calculations_. To be consistent with the Bjerksund Stensland paper, this write-up uses similar notation. Please note that both a capital B (B_0 and B_Infinity), a lower case b, and the Greek symbol Beta are all being used. B_0 and B_infinity represent that optimal exercise boundaries in edge cases (for call options where T=0 and T=infinity respectively), lower case b is the cost of carry (passed in as an input), and Beta is an intermediate calculations.
 
-$$
-\begin{array}{lcl}
-\beta & = & (0.5 - \frac{b}{V^2}) + \sqrt{(\frac{b}{V^2} - 0.5)^2 + 2 \frac{r}{V^2}} \\
-B_\infty & = & \frac{\beta}{\beta-1} X \\
-B_0 & = & max\biggl[X, (\frac{r}{r-b}) X\biggr] \\
-h_1 & = & - b T + 2 V \sqrt{T} \frac{B_0}{B_\infty-B_0} \\
-\end{array}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\begin{array}{lcl}&space;\beta&space;&&space;=&space;&&space;(0.5&space;-&space;\frac{b}{V^2})&space;&plus;&space;\sqrt{(\frac{b}{V^2}&space;-&space;0.5)^2&space;&plus;&space;2&space;\frac{r}{V^2}}&space;\\&space;B_\infty&space;&&space;=&space;&&space;\frac{\beta}{\beta-1}&space;X&space;\\&space;B_0&space;&&space;=&space;&&space;max\biggl[X,&space;(\frac{r}{r-b})&space;X\biggr]&space;\\&space;h_1&space;&&space;=&space;&&space;-&space;b&space;T&space;&plus;&space;2&space;V&space;\sqrt{T}&space;\frac{B_0}{B_\infty-B_0}&space;\\&space;\end{array}" title="\begin{array}{lcl} \beta & = & (0.5 - \frac{b}{V^2}) + \sqrt{(\frac{b}{V^2} - 0.5)^2 + 2 \frac{r}{V^2}} \\ B_\infty & = & \frac{\beta}{\beta-1} X \\ B_0 & = & max\biggl[X, (\frac{r}{r-b}) X\biggr] \\ h_1 & = & - b T + 2 V \sqrt{T} \frac{B_0}{B_\infty-B_0} \\ \end{array}" /></p>
 
 _Calculate the Early Exercise Boundary (i)_. The lower case i represents the early exercise boundary. Alpha is an intermediate calculation.
 
-$$
-\begin{array}{lcl}
-i & = & B_0 + (B_\infty-B_0)(1 - e^{h_1} ) \\
-\alpha & = & (i-X) i^{-\beta}
-\end{array}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\begin{array}{lcl}&space;i&space;&&space;=&space;&&space;B_0&space;&plus;&space;(B_\infty-B_0)(1&space;-&space;e^{h_1}&space;)&space;\\&space;\alpha&space;&&space;=&space;&&space;(i-X)&space;i^{-\beta}&space;\end{array}" title="\begin{array}{lcl} i & = & B_0 + (B_\infty-B_0)(1 - e^{h_1} ) \\ \alpha & = & (i-X) i^{-\beta} \end{array}" /></p>
 
 Check for immediate exercise.
 
-$$
-\begin{equation}
-if F >= i, then Value = F - X
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?Value&space;=&space;F&space;-&space;X&space;\text{&space;if&space;}&space;F&space;>=&space;i" title="Value = F - X \text{ if } F >= i" /></p>
 
 If no immediate exercise, approximate the early exercise price.
 
-$$
-\begin{eqnarray}
-Value & = & \alpha * F^\beta \\
-& - & \alpha * \phi(F,T,\beta,i,i,r,b,V) \\
-& + & \phi(F,T,1,i,i,r,b,V) \\
-& - & \phi(F,T,1,X,i,r,b,V) \\
-& - & X * \phi(F,T,0,i,i,r,b,V) \\
-& + & X * \phi(F,T,0,X,i,r,b,V)
-\end{eqnarray}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\begin{array}{lcl}&space;Value&space;&&space;=&space;&&space;\alpha&space;*&space;F^\beta&space;\\&space;&&space;-&space;&&space;\alpha&space;*&space;\phi(F,T,\beta,i,i,r,b,V)&space;\\&space;&&space;&plus;&space;&&space;\phi(F,T,1,i,i,r,b,V)&space;\\&space;&&space;-&space;&&space;\phi(F,T,1,X,i,r,b,V)&space;\\&space;&&space;-&space;&&space;X&space;*&space;\phi(F,T,0,i,i,r,b,V)&space;\\&space;&&space;&plus;&space;&&space;X&space;*&space;\phi(F,T,0,X,i,r,b,V)&space;\end{array}" title="\begin{array}{lcl} Value & = & \alpha * F^\beta \\ & - & \alpha * \phi(F,T,\beta,i,i,r,b,V) \\ & + & \phi(F,T,1,i,i,r,b,V) \\ & - & \phi(F,T,1,X,i,r,b,V) \\ & - & X * \phi(F,T,0,i,i,r,b,V) \\ & + & X * \phi(F,T,0,X,i,r,b,V) \end{array}" /></p>
 
 _Compare to European Value_.
 Due to the approximation, it is sometime possible to get a value slightly smaller than the European value. If so, set the value equal to the European value estimated using Generalized Black Scholes.
-$$
-\begin{equation}
-Value_{BS1993} = Max \biggl[ Value, Value_{GBS} \biggr]
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?Value_{BS1993}&space;=&space;Max&space;\biggl[&space;Value,&space;Value_{GBS}&space;\biggr]" title="Value_{BS1993} = Max \biggl[ Value, Value_{GBS} \biggr]" /></p>
 
 #### Bjerksund Stensland 2002 (BS2002)
 Source: https://www.researchgate.net/publication/228801918
@@ -444,70 +348,25 @@ Source: https://www.researchgate.net/publication/228801918
 
 #### Psi
 Psi is an intermediate calculation used by the Bjerksund Stensland 2002 approximation.
-
-$$
-\begin{equation}
-\psi(F, t_2, \gamma, H, I_2, I_1, t_1, r, b, V)
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\psi(F,&space;t_2,&space;\gamma,&space;H,&space;I_2,&space;I_1,&space;t_1,&space;r,&space;b,&space;V)" title="\psi(F, t_2, \gamma, H, I_2, I_1, t_1, r, b, V)" /></p>
 
 _Intermediate calculations_.
 The Psi function has a large number of intermediate calculations. For clarity, these are loosely organized into groups with each group used to simplify the next set of intermediate calculations.
-
-$$
-\begin{array}{lcl}
-A_1 & = & V \ln(t_1) \\
-A_2 & = & V \ln(t_2) \\
-B_1 & = & \biggl[ b+(\gamma-0.5) V^2 \biggr] t_1 \\
-B_2 & = & \biggl[ b+(\gamma-0.5) V^2 \biggr] t_2
-\end{array}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\begin{array}{lcl}&space;A_1&space;&&space;=&space;&&space;V&space;\ln(t_1)&space;\\&space;A_2&space;&&space;=&space;&&space;V&space;\ln(t_2)&space;\\&space;B_1&space;&&space;=&space;&&space;\biggl[&space;b&plus;(\gamma-0.5)&space;V^2&space;\biggr]&space;t_1&space;\\&space;B_2&space;&&space;=&space;&&space;\biggl[&space;b&plus;(\gamma-0.5)&space;V^2&space;\biggr]&space;t_2&space;\end{array}" title="\begin{array}{lcl} A_1 & = & V \ln(t_1) \\ A_2 & = & V \ln(t_2) \\ B_1 & = & \biggl[ b+(\gamma-0.5) V^2 \biggr] t_1 \\ B_2 & = & \biggl[ b+(\gamma-0.5) V^2 \biggr] t_2 \end{array}" /></p>
 
 More Intermediate calculations
-
-$$
-\begin{array}{lcl}
-d_1 & = & \frac{ln(\frac{F}{I_1}) + B_1}{A_1} \\
-d_2 & = & \frac{ln(\frac{I_2^2}{F I_1}) + B_1}{A_1} \\
-d_3 & = & \frac{ln(\frac{F}{I_1}) - B_1}{A_1} \\
-d_4 & = & \frac{ln(\frac{I_2^2}{F I_1}) - B_1}{A_1} \\
-e_1 & = & \frac{ln(\frac{F}{H}) + B_2}{A_2} \\
-e_2 & = & \frac{ln(\frac{I_2^2}{F H}) + B_2}{A_2} \\
-e_3 & = & \frac{ln(\frac{I_1^2}{F H}) + B_2}{A_2} \\
-e_4 & = & \frac{ln(\frac{F I_1^2}{H I_2^2}) + B_2}{A_2}
-\end{array}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\begin{array}{lcl}&space;d_1&space;&&space;=&space;&&space;\frac{ln(\frac{F}{I_1})&space;&plus;&space;B_1}{A_1}&space;\\&space;d_2&space;&&space;=&space;&&space;\frac{ln(\frac{I_2^2}{F&space;I_1})&space;&plus;&space;B_1}{A_1}&space;\\&space;d_3&space;&&space;=&space;&&space;\frac{ln(\frac{F}{I_1})&space;-&space;B_1}{A_1}&space;\\&space;d_4&space;&&space;=&space;&&space;\frac{ln(\frac{I_2^2}{F&space;I_1})&space;-&space;B_1}{A_1}&space;\\&space;e_1&space;&&space;=&space;&&space;\frac{ln(\frac{F}{H})&space;&plus;&space;B_2}{A_2}&space;\\&space;e_2&space;&&space;=&space;&&space;\frac{ln(\frac{I_2^2}{F&space;H})&space;&plus;&space;B_2}{A_2}&space;\\&space;e_3&space;&&space;=&space;&&space;\frac{ln(\frac{I_1^2}{F&space;H})&space;&plus;&space;B_2}{A_2}&space;\\&space;e_4&space;&&space;=&space;&&space;\frac{ln(\frac{F&space;I_1^2}{H&space;I_2^2})&space;&plus;&space;B_2}{A_2}&space;\end{array}" title="\begin{array}{lcl} d_1 & = & \frac{ln(\frac{F}{I_1}) + B_1}{A_1} \\ d_2 & = & \frac{ln(\frac{I_2^2}{F I_1}) + B_1}{A_1} \\ d_3 & = & \frac{ln(\frac{F}{I_1}) - B_1}{A_1} \\ d_4 & = & \frac{ln(\frac{I_2^2}{F I_1}) - B_1}{A_1} \\ e_1 & = & \frac{ln(\frac{F}{H}) + B_2}{A_2} \\ e_2 & = & \frac{ln(\frac{I_2^2}{F H}) + B_2}{A_2} \\ e_3 & = & \frac{ln(\frac{I_1^2}{F H}) + B_2}{A_2} \\ e_4 & = & \frac{ln(\frac{F I_1^2}{H I_2^2}) + B_2}{A_2} \end{array}" /></p>
 
 Even More Intermediate calculations
-
-$$
-\begin{array}{lcl}
-\tau & = & \sqrt{\frac{t_1}{t_2}} \\
-\lambda & = & -r+\gamma b+\frac{\gamma}{2} (\gamma-1) V^2 \\
-\kappa & = & \frac{2b}{V^2} +(2 \gamma - 1)
-\end{array}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\begin{array}{lcl}&space;\tau&space;&&space;=&space;&&space;\sqrt{\frac{t_1}{t_2}}&space;\\&space;\lambda&space;&&space;=&space;&&space;-r&plus;\gamma&space;b&plus;\frac{\gamma}{2}&space;(\gamma-1)&space;V^2&space;\\&space;\kappa&space;&&space;=&space;&&space;\frac{2b}{V^2}&space;&plus;(2&space;\gamma&space;-&space;1)&space;\end{array}" title="\begin{array}{lcl} \tau & = & \sqrt{\frac{t_1}{t_2}} \\ \lambda & = & -r+\gamma b+\frac{\gamma}{2} (\gamma-1) V^2 \\ \kappa & = & \frac{2b}{V^2} +(2 \gamma - 1) \end{array}" /></p>
 
 _The calculation of Psi_.
 This is the actual calculation of the Psi function. In the function below, M() represents the cumulative bivariate normal distribution (described a couple of paragraphs below this section). The abbreviation M() is used instead of CBND() in this section to make the equation a bit more readable and to match the naming convention used in Haug's book "The Complete Guide to Option Pricing Formulas".
-
-$$
-\begin{eqnarray}
-\psi & = & e^{\lambda t_2} F^\gamma M(-d_1, -e_1, \tau) \\
-& - & \frac{I_2}{F}^\kappa M(-d_2, -e_2, \tau) \\
-& - & \frac{I_1}{F}^\kappa M(-d_3, -e_3, -\tau) \\
-& + & \frac{I_1}{I_2}^\kappa M(-d_4, -e_4, -\tau))
-\end{eqnarray}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\begin{array}{lcl}&space;\psi&space;&&space;=&space;&&space;e^{\lambda&space;t_2}&space;F^\gamma&space;M(-d_1,&space;-e_1,&space;\tau)&space;\\&space;&&space;-&space;&&space;\frac{I_2}{F}^\kappa&space;M(-d_2,&space;-e_2,&space;\tau)&space;\\&space;&&space;-&space;&&space;\frac{I_1}{F}^\kappa&space;M(-d_3,&space;-e_3,&space;-\tau)&space;\\&space;&&space;&plus;&space;&&space;\frac{I_1}{I_2}^\kappa&space;M(-d_4,&space;-e_4,&space;-\tau))&space;\end{array}" title="\begin{array}{lcl} \psi & = & e^{\lambda t_2} F^\gamma M(-d_1, -e_1, \tau) \\ & - & \frac{I_2}{F}^\kappa M(-d_2, -e_2, \tau) \\ & - & \frac{I_1}{F}^\kappa M(-d_3, -e_3, -\tau) \\ & + & \frac{I_1}{I_2}^\kappa M(-d_4, -e_4, -\tau)) \end{array}" /></p>
 
 #### Phi
 Phi is an intermediate calculation used by both the Bjerksun Stensland 1993 and 2002 approximations. Many of the parameters are the same as the GBS model.
-
-$$
-\begin{equation}
-\phi(FS, T, \gamma, h, I, r, b, V)
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\phi(FS,&space;T,&space;\gamma,&space;h,&space;I,&space;r,&space;b,&space;V)" title="\phi(FS, T, \gamma, h, I, r, b, V)" /></p>
 
 ```
     FS = Forward or spot price (abbreviated FS in code, F in formulas below).
@@ -520,66 +379,30 @@ $$
 ```
 
 Internally, the `Phi()` function is implemented as follows:
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?d_1&space;=&space;-\frac{ln(\frac{F}{h})&space;&plus;&space;\biggl[b&plus;(\gamma-0.5)&space;V^2&space;\biggr]&space;T}{V&space;\sqrt{T}}" title="d_1 = -\frac{ln(\frac{F}{h}) + \biggl[b+(\gamma-0.5) V^2 \biggr] T}{V \sqrt{T}}" /></p>
 
-$$
-\begin{equation}
-d_1 = -\frac{ln(\frac{F}{h}) + \biggl[b+(\gamma-0.5) V^2 \biggr] T}{V \sqrt{T}}
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?d_2&space;=&space;d_1&space;-&space;2&space;\frac{ln(I/F)}{V&space;\sqrt(T)}" title="d_2 = d_1 - 2 \frac{ln(I/F)}{V \sqrt(T)}" /></p>
 
-$$
-\begin{equation}
-d_2 = d_1 - 2 \frac{ln(I/F)}{V \sqrt(T)}
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\lambda&space;=&space;-r&plus;\gamma&space;b&plus;0.5&space;\gamma&space;(\gamma-1)&space;V^2" title="\lambda = -r+\gamma b+0.5 \gamma (\gamma-1) V^2" /></p>
 
-$$
-\begin{equation}
-\lambda = -r+\gamma b+0.5 \gamma (\gamma-1) V^2
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\kappa&space;=&space;\frac{2b}{V^2}&plus;(2\gamma-1)" title="\kappa = \frac{2b}{V^2}+(2\gamma-1)" /></p>
 
-$$
-\begin{equation}
-\kappa = \frac{2b}{V^2}+(2\gamma-1)
-\end{equation}
-$$
-
-$$
-\begin{equation}
-\phi = e^{\lambda T} F^{\gamma} \biggl[ N(d_1)-\frac{I}{F}^{\kappa} N(d_2) \biggr]
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?\phi&space;=&space;e^{\lambda&space;T}&space;F^{\gamma}&space;\biggl[&space;N(d_1)-\frac{I}{F}^{\kappa}&space;N(d_2)&space;\biggr]" title="\phi = e^{\lambda T} F^{\gamma} \biggl[ N(d_1)-\frac{I}{F}^{\kappa} N(d_2) \biggr]" /></p>
 
 ##### Normal Cumulative Density Function (N)
 This is the normal cumulative density function. It can be found described in a variety of statistical textbooks and/or Wikipedia. It is part of the standard `scipy.stats` distribution and imported using the `from scipy.stats import norm` command.
 
 Example:
-
-$$
-\begin{equation}
-    N(d_1)
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?N(d_1)" title="N(d_1)" /></p>
 
 #### Cumulative bivariate normal distribution (CBND)
 The bivariate normal density function (BNDF) is given below (see Figure 8):
-
-$$
-\begin{equation}
-BNDF(x, y) =  \frac{1}{2 \pi \sqrt{1-p^2}} exp \biggl[-\frac{x^2-2pxy+y^2}{2(1-p^2)}\biggr]
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?BNDF(x,&space;y)&space;=&space;\frac{1}{2&space;\pi&space;\sqrt{1-p^2}}&space;exp&space;\biggl[-\frac{x^2-2pxy&plus;y^2}{2(1-p^2)}\biggr]" title="BNDF(x, y) = \frac{1}{2 \pi \sqrt{1-p^2}} exp \biggl[-\frac{x^2-2pxy+y^2}{2(1-p^2)}\biggr]" /></p>
 
 **Figure 8.** Bivariate Normal Density Function (BNDF).
 
 This can be integrated over x and y to calculate the joint probability that x < a and y < b. This is called the cumulative bivariate normal distribution (CBND; see Figure 9):
-
-$$
-\begin{equation}
-CBND(a, b, p) = \frac{1}{2 \pi \sqrt{1-p^2}} \int_{-\infty}^{a} \int_{-\infty}^{b} exp \biggl[-\frac{x^2-2pxy+y^2}{2(1-p^2)}\biggr] d_x d_y
-\end{equation}
-$$
+<p align="center"><img src="https://latex.codecogs.com/svg.latex?CBND(a,&space;b,&space;p)&space;=&space;\frac{1}{2&space;\pi&space;\sqrt{1-p^2}}&space;\int_{-\infty}^{a}&space;\int_{-\infty}^{b}&space;exp&space;\biggl[-\frac{x^2-2pxy&plus;y^2}{2(1-p^2)}\biggr]&space;d_x&space;d_y" title="CBND(a, b, p) = \frac{1}{2 \pi \sqrt{1-p^2}} \int_{-\infty}^{a} \int_{-\infty}^{b} exp \biggl[-\frac{x^2-2pxy+y^2}{2(1-p^2)}\biggr] d_x d_y" /></p>
 
 **Figure 9.** Cumulative Bivariate Normal Distribution (CBND).
 
@@ -609,21 +432,21 @@ These functions encapsulate the most commonly encountered option pricing formula
 
 #### Public Functions in the Library
 
-Pricing Formulas:
-       1. `black_scholes(option_type, fs, x, t, r, v)`
-    2. `merton(option_type, fs, x, t, r, q, v)`
-    3. `black_76(option_type, fs, x, t, r, v)`
-    4. `garman_kohlhagen(option_type, fs, x, t, b, r, rf, v)`
-    5. `asian_76(option_type, fs, x, t, t_a, r, v)`
-    6. `kirks_76(option_type, f1, f2, x, t, r, v1, v2, corr)`
-    7. `american(option_type, fs, x, t, r, q, v)`
-    8. `american_76(option_type, fs, x, t, r, v)`
+Pricing Formulas
+1. `black_scholes(option_type, fs, x, t, r, v)`
+2. `merton(option_type, fs, x, t, r, q, v)`
+3. `black_76(option_type, fs, x, t, r, v)`
+4. `garman_kohlhagen(option_type, fs, x, t, b, r, rf, v)`
+5. `asian_76(option_type, fs, x, t, t_a, r, v)`
+6. `kirks_76(option_type, f1, f2, x, t, r, v1, v2, corr)`
+7. `american(option_type, fs, x, t, r, q, v)`
+8. `american_76(option_type, fs, x, t, r, v)`
 
 Implied Volatility Formulas
-       9. `euro_implied_vol(option_type, fs, x, t, r, q, cp)`
-    10. `euro_implied_vol_76(option_type, fs, x, t, r, cp)`
-    11. `amer_implied_vol(option_type, fs, x, t, r, q, cp)`
-    12. `amer_implied_vol_76(option_type, fs, x, t, r, cp)`
+9. `euro_implied_vol(option_type, fs, x, t, r, q, cp)`
+10. `euro_implied_vol_76(option_type, fs, x, t, r, cp)`
+11. `amer_implied_vol(option_type, fs, x, t, r, q, cp)`
+12. `amer_implied_vol_76(option_type, fs, x, t, r, cp)`
 
 #### Inputs used by all models
 | **Parameter** | **Description**                                              |
