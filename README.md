@@ -1,12 +1,28 @@
 # optlib
-A library to price financial options using closed-form solutions written in Python. Original code written by Davis Edwards, packaged by Daniel Rojas. MIT License.
+A library to fetch financial option chains and price options using closed-form solutions written in Python. Original code written by Davis Edwards, packaged by Daniel Rojas. MIT License.
 
-## Includes
-1. European Options: Black-Scholes, Black76, Merton, Garman-Kohlhagan;
-2. Spread Options: Kirk's Approximation, Heat Rate Options;
-3. American Options: Bjerksund-Stensland
-4. Implied Volatility
-5. Asian Options
+**Changelog**
+
+* 1/1/2017 Davis Edwards, Created GBS and Asian option formulas
+* 3/2/2017 Davis Edwards, added TeX formulas to describe calculations
+* 4/9/2017 Davis Edwards, added spread option (Kirk's approximation)
+* 5/10/2017 Davis Edwards, added graphics for sensitivity analysis
+* 5/18/2017 Davis Edwards, added Bjerksund-Stensland (2002) approximation for American Options
+* 5/19/2017 Davis Edwards, added implied volatility calculations
+* 6/7/2017 Davis Edwards, expanded sensitivity tests for American option approximation.
+* 6/21/2017 Davis Edwards, added documentation for Bjerksund-Stensland models
+* 7/21/2017 Davis Edwards, refactored all of the functions to match the parameter order to Haug's "The Complete Guide to Option Pricing Formulas".
+* 08/31/2020 Daniel Rojas, Added functionality to fetch option chains using the TDAmeritrade API.
+
+**TODO List**
+
+1. Since the Asian Option valuation uses an approximation, need to determine the range of acceptable stresses that can be applied to the volatility input
+2. Sub-class the custom assertions in this module to work with "unittest"
+3. Update the greek calculations for American Options - currently the Greeks are approximated by the greeks from GBS model.
+4. Add a bibliography referencing the academic papers used as sources
+5. Finish writing documentation formulas for Close-Form approximation for American Options
+6. Refactor the order of parameters for the function calls to replicate the order of parameters in academic literature
+7. Add figures to README.md
 
 ## Installation
 
@@ -26,30 +42,7 @@ and in the `optlib` directory execute
 python setup.py install
 ```
 
-# Closed Form Option Pricing Formulas
-## Generalized Black Scholes (GBS) and similar models
-
-**Changelog**
-
-* 1/1/2017 Davis Edwards, Created GBS and Asian option formulas
-* 3/2/2017 Davis Edwards, added TeX formulas to describe calculations
-* 4/9/2017 Davis Edwards, added spread option (Kirk's approximation)
-* 5/10/2017 Davis Edwards, added graphics for sensitivity analysis
-* 5/18/2017 Davis Edwards, added Bjerksund-Stensland (2002) approximation for American Options
-* 5/19/2017 Davis Edwards, added implied volatility calculations
-* 6/7/2017 Davis Edwards, expanded sensitivity tests for American option approximation.
-* 6/21/2017 Davis Edwards, added documentation for Bjerksund-Stensland models
-* 7/21/2017 Davis Edwards, refactored all of the functions to match the parameter order to Haug's "The Complete Guide to Option Pricing Formulas".
-
-**TODO List**
-
-1. Since the Asian Option valuation uses an approximation, need to determine the range of acceptable stresses that can be applied to the volatility input
-2. Sub-class the custom assertions in this module to work with "unittest"
-3. Update the greek calculations for American Options - currently the Greeks are approximated by the greeks from GBS model.
-4. Add a bibliography referencing the academic papers used as sources
-5. Finish writing documentation formulas for Close-Form approximation for American Options
-6. Refactor the order of parameters for the function calls to replicate the order of parameters in academic literature
-7. Add figures to README.md
+The `optlib.api` module requires a TDAmeritrade API key. Create a developer account on https://developer.tdameritrade.com/ to get one.
 
 ## Purpose
 
@@ -66,16 +59,60 @@ Pricing Formulas
 8. `american_76()` American Commodity Options
 
 Implied Volatility Formulas
-9. `euro_implied_vol()` Implied volatility calculator for European options
-10. `euro_implied_vol_76()` Implied volatility calculator for European commodity options
-11. `amer_implied_vol()` Implied volatility calculator for American options
-12. `amer_implied_vol_76()` Implied volatility calculator for American commodity options
+9.  `euro_implied_vol()` Implied volatility calculator for European options
+10.  `euro_implied_vol_76()` Implied volatility calculator for European commodity options
+11.  `amer_implied_vol()` Implied volatility calculator for American options
+12.  `amer_implied_vol_76()` Implied volatility calculator for American commodity options
 
 Note:
 In honor of the `black_76` model, the `_76` on the end of functions indicates a commodity option.
 
 ## Scope
 This model is built to price financial option contracts on a wide variety of financial commodities. These options are widely used and represent the benchmark to which other (more complicated) models are compared. While those more complicated models may outperform these models in specific areas, out-performance is relatively uncommon. By an large, these models have taken on all challengers and remain the de-facto industry standard.
+
+## TDAmeritrade Option Chain API
+This library provides the ability to fetch up-to-date option chain data using TDAmeritrade's option chain API. In order to use this functionality, the user is required to get his own API key. This can be done by creating a developer account on https://developer.tdameritrade.com/.
+
+The API accepts the following query parameters.
+* `apikey`. Required. Application consumer key on TDAmeritrade platform.
+* `symbol`. Required. Symbol to get option chain for.
+* `contractType`. Type of contracts to return in the chain. Can be `CALL`, `PUT`, or `ALL`. Default is `ALL`.
+* `strikeCount`. The number of strikes to return above and below the at-the-money price.
+* `includeQuotes`. Include quotes for options in the option chain. Can be `TRUE` or `FALSE`. Default is `FALSE`.
+* `strategy`. Passing a value returns a Strategy Chain. For more information about strategies refer to https://www.optionsplaybook.com/option-strategies/. Default is `SINGLE`. Possible values are:
+    * `SINGLE`
+    * `ANALYTICAL`: Allows use of the `volatility`, `underlyingPrice`, `interestRate`, and `daysToExpiration` params to calculate theoretical values.
+    * `COVERED`
+    * `VERTICAL`
+    * `CALENDAR`
+    * `STRANGLE`
+    * `STRADDLE`
+    * `BUTTERFLY`
+    * `CONDOR`
+    * `DIAGONAL`
+    * `COLLAR`
+    * `ROLL`
+* `interval`. Strike interval for spread strategy chains (see `strategy` param).
+* `strike`. Provide a strike price to return options only at that strike price.
+* `range`. Returns options for the given range. Default is `ALL`. Possible values are:
+    * `ITM`: In-the-money
+    * `NTM`: Near-the-money
+    * `OTM`: Out-of-the-money
+    * `SAK`: Strikes Above Market
+    * `SBK`: Strikes Below Market
+    * `SNK`: Strikes Near Market
+    * `ALL`: All Strikes
+* `fromDate`. Only return expirations after this date. For strategies, expiration refers to the nearest term expiration in the strategy. Valid ISO-8601 formats are: `yyyy-MM-dd` and `yyyy-MM-dd'T'HH:mm:ssz`.
+* `toDate`: Only return expirations before this date. For strategies, expiration refers to the nearest term expiration in the strategy. Valid ISO-8601 formats are: `yyyy-MM-dd` and `yyyy-MM-dd'T'HH:mm:ssz`.
+* `volatility`. Volatility to use in calculations. Applies only to `ANALYTICAL` strategy chains (see strategy param).
+* `underlyingPrice`. Underlying price to use in calculations. Applies only to ANALYTICAL strategy chains (see `strategy` param).
+* `interestRate`. Interest rate to use in calculations. Applies only to `ANALYTICAL` strategy chains (see `strategy` param).
+* `daysToExpiration`. Days to expiration to use in calculations. Applies only to `ANALYTICAL` strategy chains (see `strategy` param).
+* `expMonth`. Return only options expiring in the specified month. Month is given in the three character format. Example: `JAN`. Default is `ALL`.
+* `optionType`. Type of contracts to return. Default is `ALL`. Possible values are:
+    * `S`: Standard contracts
+    * `NS`: Non-standard contracts
+    * `ALL`: All contracts
 
 ## Theory
 
@@ -105,8 +142,8 @@ The generalized Black Scholes formula can found below (see Figure 1). While thes
 
 <style>
 {
-    display:block; 
-    float:none; 
+    display:block;
+    float:none;
     margin-left:auto;
     margin-right:auto;
     width:60%;
@@ -223,7 +260,7 @@ The ratio implies that the option is profitable to exercise (*in the money*) whe
 <p align="center"><img src="https://latex.codecogs.com/svg.latex?P&space;=&space;(F_2&space;&plus;&space;X)\biggl[e^{-rT}&space;N(-D_2)&space;-&space;Fe^{(b-r)T}&space;N(-D_1)\biggr]" title="P = (F_2 + X)\biggl[e^{-rT} N(-D_2) - Fe^{(b-r)T} N(-D_1)\biggr]" /></p>
 
 <p align="center"><img src="https://latex.codecogs.com/svg.latex?D_1&space;=&space;\frac{ln(F)&space;&plus;&space;(b&plus;\frac{V^2}{2})T}{V*\sqrt{T}}" title="D_1 = \frac{ln(F) + (b+\frac{V^2}{2})T}{V*\sqrt{T}}" /></p>
-    
+
 <p align="center"><img src="https://latex.codecogs.com/svg.latex?D_2&space;=&space;D_1&space;-&space;V\sqrt{T}" title="D_2 = D_1 - V\sqrt{T}" /></p>
 
 **Figure 6.** Kirk's Approximation Ratio.
