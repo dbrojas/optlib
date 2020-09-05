@@ -176,16 +176,6 @@ An important concept of Black Scholes models is that the actual way that the und
 
 The generalized Black Scholes formula can found below (see Figure 1). While these formulas may look complicated at first glance, most of the terms can be found as part of an options contract or are prices readily available in the market.  The only term that is difficult to calculate is the implied volatility (σ). Implied volatility is typically calculated using prices of other options that have recently been traded.
 
-<style>
-{
-    display:block;
-    float:none;
-    margin-left:auto;
-    margin-right:auto;
-    width:60%;
-}
-</style>
-
 *Call Price*
 <p align="center"><img src="https://latex.codecogs.com/svg.latex?C&space;=&space;Fe^{(b-r)T}&space;N(D_1)&space;-&space;Xe^{-rT}&space;N(D_2)" title="C = Fe^{(b-r)T} N(D_1) - Xe^{-rT} N(D_2)" /></p>
 
