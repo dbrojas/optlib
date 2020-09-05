@@ -99,14 +99,14 @@ The historical data API accepts the following query parameters.
     * `year`: `daily`, `weekly`, `monthly`*
     * `ytd`: `daily`, `weekly`*
 * `frequency`. The type of frequency with which a new candle is formed.
-    Valid frequencyTypes by periodType (defaults marked with an asterisk):
+    Valid `frequencyType`s by `periodType` (defaults marked with an asterisk):
     * `day`: `minute`*
     * `month`: `daily`, `weekly`*
     * `year`: `daily`, `weekly`, `monthly`*
     * `ytd`: `daily`, `weekly`*
-* `startDate`. Start date as milliseconds since epoch.
-* `endDate`. End date as milliseconds since epoch.
-* `needExtendedHoursData`.  to return extended hours data, false for regular market hours only.
+* `startDate`. End date as milliseconds since epoch. If startDate and endDate are provided, period should not be provided. Default is previous trading day.
+* `endDate`. Start date as milliseconds since epoch. If startDate and endDate are provided, period should not be provided.
+* `needExtendedHoursData`. `true` to return extended hours data, `false` for regular market hours only. Default is `true`
 
 ### Option Chains
 The option chain API accepts the following query parameters.
