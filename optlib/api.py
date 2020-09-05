@@ -1,7 +1,11 @@
-import subprocess
+from subprocess import check_output
 import json
 
-ENDPOINT = "https://api.tdameritrade.com/v1/marketdata/chains"
+# ------------------------------
+# This class defines the URLs to the implemented endpoints.
+class Endpoint:
+    CHAIN = "https://api.tdameritrade.com/v1/marketdata/chains"
+    HIST = "https://api.tdameritrade.com/v1/marketdata/{0}/pricehistory"
 
 # ------------------------------
 # This class defines the Exception that gets thrown when the api input is bad.
@@ -15,7 +19,17 @@ def _test_input(*args, **kwargs):
     if ("apikey" not in kwargs.keys()) or ("symbol" not in kwargs.keys()):
         raise API_InputError("Bad input. `apikey` and `symbol` are required.")
 
-def get(*args, **kwargs):
+# ------------------------------
+# This function sends the request to the specified API endpoint.
+def _get(endpoint, *args, **kwargs):
+
+    url = "?".join([endpoint, "&".join(f"{k}={v}" for k, v in kwargs.items())])
+    if (resp := json.loads(check_output(["curl", "-gs", url]))).get("error"):
+        raise API_InputError(f"{0}".format(resp["error"]))
+
+    return resp
+
+def get_chain(*args, **kwargs):
     """Request an option chain from TDAmeritrade's API.
 
     Args:
@@ -42,9 +56,27 @@ def get(*args, **kwargs):
     """
     _test_input(*args, **kwargs)
 
-    url = "?".join([ENDPOINT, "&".join(f"{k}={v}" for k, v in kwargs.items())])
-    resp = json.loads(subprocess.check_output(["curl", "-gs", url]))
-    if resp.get("error"):
-        raise API_InputError("Bad query. Contains unknown query parameters.")
+    endpoint = Endpoint.CHAIN
+    return _get(endpoint, *args, **kwargs)
 
-    return resp
+def get_historical(*args, **kwargs):
+    """Request historical price data from TDAmeritrade's API.
+
+    Args:
+        apikey (str):                API key to api.tdameritrade.com.
+        symbol (str):                Stock symbol to get the option chain for.
+        periodType (str):            The type of period to show. Can be day, month, year, or ytd.
+        period (int):                The number of periods to show.
+        frequencyType (str):         The type of frequency with which a new candle is formed. Can be day, month, year, ytd.
+        frequency (str):             The number of the frequencyType to be included in each candle.
+        startDate (int):             Start date as milliseconds since epoch.
+        endDate (int):               End date as milliseconds since epoch.
+        needExtendedHoursData (str): true to return extended hours data, false for regular market hours only.
+
+    Returns:
+        resp (dict): API response with historical price data.
+    """
+    _test_input(*args, **kwargs)
+
+    endpoint = Endpoint.HIST.format(kwargs["symbol"])
+    return _get(endpoint, *args, **kwargs)

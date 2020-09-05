@@ -71,9 +71,45 @@ In honor of the `black_76` model, the `_76` on the end of functions indicates a 
 This model is built to price financial option contracts on a wide variety of financial commodities. These options are widely used and represent the benchmark to which other (more complicated) models are compared. While those more complicated models may outperform these models in specific areas, out-performance is relatively uncommon. By an large, these models have taken on all challengers and remain the de-facto industry standard.
 
 ## TDAmeritrade Option Chain API
-This library provides the ability to fetch up-to-date option chain data using TDAmeritrade's option chain API. In order to use this functionality, the user is required to get his own API key. This can be done by creating a developer account on https://developer.tdameritrade.com/.
+This library provides the ability to fetch up-to-date data using TDAmeritrade'sAPI. In order to use this functionality, the user is required to get his own API key. This can be done by creating a developer account on https://developer.tdameritrade.com/.
 
-The API accepts the following query parameters.
+### Historical Data
+The historical data API accepts the following query parameters.
+* `apikey`. Required. Application consumer key on TDAmeritrade platform.
+* `symbol`. Required. Symbol to get option chain for.
+* `periodType`. The type of period to show. Valid values are `day`, `month`, `year`, or `ytd` (year to date). Default is `day`.
+* `period`. The number of periods to show.
+
+    Example: For a 2 day / 1 min chart, the values would be:
+    * period: 2
+    * periodType: `day`
+    * frequency: 1
+    * frequencyType: `minute`
+
+    Valid `periods` by `periodType` (defaults marked with an asterisk):
+    * `day`: 1, 2, 3, 4, 5, 10*
+    * `month`: 1*, 2, 3, 6
+    * `year`: 1*, 2, 3, 5, 10, 15, 20
+    * `ytd`: 1*
+* `frequencyType`. The type of frequency with which a new candle is formed.
+
+    Valid frequencyTypes by `periodType` (defaults marked with an asterisk):
+    * `day`: `minute`*
+    * `month`: `daily`, `weekly`*
+    * `year`: `daily`, `weekly`, `monthly`*
+    * `ytd`: `daily`, `weekly`*
+* `frequency`. The type of frequency with which a new candle is formed.
+    Valid frequencyTypes by periodType (defaults marked with an asterisk):
+    * `day`: `minute`*
+    * `month`: `daily`, `weekly`*
+    * `year`: `daily`, `weekly`, `monthly`*
+    * `ytd`: `daily`, `weekly`*
+* `startDate`. Start date as milliseconds since epoch.
+* `endDate`. End date as milliseconds since epoch.
+* `needExtendedHoursData`.  to return extended hours data, false for regular market hours only.
+
+### Option Chains
+The option chain API accepts the following query parameters.
 * `apikey`. Required. Application consumer key on TDAmeritrade platform.
 * `symbol`. Required. Symbol to get option chain for.
 * `contractType`. Type of contracts to return in the chain. Can be `CALL`, `PUT`, or `ALL`. Default is `ALL`.
