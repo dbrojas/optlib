@@ -1,6 +1,6 @@
 __pycache__/
-build
-dist
-*.egg-info
-.eggs
-.pypirc
+build/
+dist/
+*.egg-info/
+
+.env

@@ -14,6 +14,7 @@ A library to fetch financial option chains and price options using closed-form s
 * 7/21/2017 Davis Edwards, refactored all of the functions to match the parameter order to Haug's "The Complete Guide to Option Pricing Formulas".
 * 08/31/2020 Daniel Rojas, Added functionality to fetch option chains using the TDAmeritrade API.
 * 09/05/2020 Daniel Rojas, Added functionality to fetch historical data using the TDAmeritrade API.
+* 04/10/2021 Daniel Rojas, Write classes to represent API responses
 
 **TODO List**
 

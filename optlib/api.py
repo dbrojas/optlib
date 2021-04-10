@@ -1,17 +1,21 @@
 from subprocess import check_output
 import json
 
+from optlib.classes import Historical, OptionChain
+
 # ------------------------------
 # This class defines the URLs to the implemented endpoints.
 class Endpoint:
     CHAIN = "https://api.tdameritrade.com/v1/marketdata/chains"
-    HIST = "https://api.tdameritrade.com/v1/marketdata/{0}/pricehistory"
+    HISTORY = "https://api.tdameritrade.com/v1/marketdata/{0}/pricehistory"
+    INSTRUMENT = "https://api.tdameritrade.com/v1/instruments"
+    QUOTE = "https://api.tdameritrade.com/v1/marketdata/{0}/quotes"
 
 # ------------------------------
 # This class defines the Exception that gets thrown when the api input is bad.
 class API_InputError(Exception):
-    def __init__(self, mismatch):
-        Exception.__init__(self, mismatch)
+    def __init__(self, msg):
+        Exception.__init__(self, msg)
 
 # ------------------------------
 # This function verifies that the required apikey and symbol arguments are provided.
@@ -25,7 +29,7 @@ def _get(endpoint, *args, **kwargs):
 
     url = "?".join([endpoint, "&".join(f"{k}={v}" for k, v in kwargs.items())])
     if (resp := json.loads(check_output(["curl", "-gs", url]))).get("error"):
-        raise API_InputError(f"{0}".format(resp["error"]))
+        raise API_InputError("{0}".format(resp["error"]))
 
     return resp
 
@@ -52,12 +56,12 @@ def get_chain(*args, **kwargs):
         optionType (str):        Type of contracts to return. Default is ALL.
 
     Returns:
-        resp (dict): API response with option chain.
+        chain (OptionChain): API response with option chain.
     """
     _test_input(*args, **kwargs)
 
     endpoint = Endpoint.CHAIN
-    return _get(endpoint, *args, **kwargs)
+    return OptionChain.parse(_get(endpoint, *args, **kwargs))
 
 def get_historical(*args, **kwargs):
     """Request historical price data from TDAmeritrade's API.
@@ -67,7 +71,7 @@ def get_historical(*args, **kwargs):
         symbol (str):                Stock symbol to get the option chain for.
         periodType (str):            The type of period to show. Can be day, month, year, or ytd.
         period (int):                The number of periods to show.
-        frequencyType (str):         The type of frequency with which a new candle is formed. Can be day, month, year, ytd.
+        frequencyType (str):         The type of frequency with which a new candle is formed. Can be minute, daily, weekly, monthly.
         frequency (str):             The number of the frequencyType to be included in each candle.
         startDate (int):             Start date as milliseconds since epoch.
         endDate (int):               End date as milliseconds since epoch.
@@ -78,5 +82,35 @@ def get_historical(*args, **kwargs):
     """
     _test_input(*args, **kwargs)
 
-    endpoint = Endpoint.HIST.format(kwargs["symbol"])
+    endpoint = Endpoint.HISTORY.format(kwargs["symbol"])
+    return Historical.parse(_get(endpoint, *args, **kwargs))
+
+def get_fundamental(*args, **kwargs):
+    """Retrieve fundamental data.
+
+    Args:
+        apikey (str): API key to api.tdameritrade.com.
+        symbol (str): Stock symbol to get the option chain for.
+
+    Returns:
+        resp (dict): API response with fundamentals data.
+    """
+    _test_input(*args, **kwargs)
+
+    kwargs.update({"projection": "fundamental"})
+    return _get(Endpoint.INSTRUMENT, *args, **kwargs)
+
+def get_quote(*args, **kwargs):
+    """Get quote for a symbol.
+
+    Args:
+        apikey (str):                API key to api.tdameritrade.com.
+        symbol (str):                Stock symbol to get the option chain for.
+
+    Returns:
+        resp (dict): API response with price quote.
+    """
+    _test_input(*args, **kwargs)
+
+    endpoint = Endpoint.QUOTE.format(kwargs["symbol"])
     return _get(endpoint, *args, **kwargs)
