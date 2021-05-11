@@ -61,6 +61,7 @@ Pricing Formulas
 8. `american_76()` American Commodity Options
 
 Implied Volatility Formulas
+
 9.  `euro_implied_vol()` Implied volatility calculator for European options
 10.  `euro_implied_vol_76()` Implied volatility calculator for European commodity options
 11.  `amer_implied_vol()` Implied volatility calculator for American options
@@ -508,6 +509,7 @@ Pricing Formulas
 8. `american_76(option_type, fs, x, t, r, v)`
 
 Implied Volatility Formulas
+
 9. `euro_implied_vol(option_type, fs, x, t, r, q, cp)`
 10. `euro_implied_vol_76(option_type, fs, x, t, r, cp)`
 11. `amer_implied_vol(option_type, fs, x, t, r, q, cp)`
