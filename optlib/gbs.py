@@ -46,15 +46,15 @@ class _GBS_Limits:
     MIN_TA = 0
 
     # This model will work with higher values for b, r, and V. However, such values are extremely uncommon.
-    # To catch some common errors, interest rates and volatility is capped to 100%
-    # This reason for 1 (100%) is mostly to cause the library to throw an exceptions
+    # To catch some common errors, interest rates and volatility is capped to 200%
+    # This reason for 2 (200%) is mostly to cause the library to throw an exceptions
     # if a value like 15% is entered as 15 rather than 0.15)
     MIN_b = -1
     MIN_r = -1
 
     MAX_b = 1
-    MAX_r = 1
-    MAX_V = 1
+    MAX_r = 2
+    MAX_V = 2
 
 
 # This class defines the Exception that gets thrown when invalid input is placed into the GBS function
