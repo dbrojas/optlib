@@ -1,5 +1,6 @@
 from subprocess import check_output
 import json
+import os
 
 import logging
 
@@ -21,14 +22,23 @@ class API_InputError(Exception):
         Exception.__init__(self, msg)
 
 # ------------------------------
-# This function verifies that the required apikey and symbol arguments are provided.
+# This function verifies that `symbol` is provided.
 def _test_input(*args, **kwargs):
-    if ("apikey" not in kwargs.keys()) or ("symbol" not in kwargs.keys()):
-        raise API_InputError("Bad input. `apikey` and `symbol` are required.")
+    if "symbol" not in kwargs.keys():
+        raise API_InputError("Bad input. `symbol` is required.")
+
+# ------------------------------
+# This function gets the API key from env, throws exception if not found.
+def _get_env(varname):
+    if (apikey := os.environ.get(varname)): return apikey
+    raise API_InputError(f"'{varname}' not found in environment")
 
 # ------------------------------
 # This function sends the request to the specified API endpoint.
 def _get(endpoint, *args, **kwargs):
+
+    if "apikey" not in kwargs:
+        kwargs.update({"apikey": _get_env("TDA_API_KEY")})
 
     url = "?".join([endpoint, "&".join(f"{k}={v}" for k, v in kwargs.items())])
     logger.debug("GET", url)
@@ -42,8 +52,8 @@ def get_chain(*args, **kwargs):
     """Request an option chain from TDAmeritrade's API.
 
     Args:
-        apikey (str):            API key to api.tdameritrade.com.
-        symbol (str):            Stock symbol to get the option chain for.
+        symbol (str):            Stock symbol to get the option chain for (required).
+        apikey (str):            API key to api.tdameritrade.com (required, can be set in env: TDA_API_KEY).
         contractType (str):      Type of contracts to return in the chain. Can be CALL, PUT, or ALL. Default is ALL.
         strikeCount (int):       The number of strikes to return above and below the at-the-money price.
         includeQuotes (str):     Include quotes for options in the option chain. Can be TRUE or FALSE. Default is FALSE.
@@ -72,8 +82,8 @@ def get_historical(*args, **kwargs):
     """Request historical price data from TDAmeritrade's API.
 
     Args:
-        apikey (str):                API key to api.tdameritrade.com.
-        symbol (str):                Stock symbol to get the option chain for.
+        symbol (str):                Stock symbol to get the option chain for (required).
+        apikey (str):                API key to api.tdameritrade.com (required, can be set in env: TDA_API_KEY).
         periodType (str):            The type of period to show. Can be day, month, year, or ytd.
         period (int):                The number of periods to show.
         frequencyType (str):         The type of frequency with which a new candle is formed. Can be minute, daily, weekly, monthly.
@@ -94,8 +104,8 @@ def get_fundamental(*args, **kwargs):
     """Retrieve fundamental data.
 
     Args:
-        apikey (str): API key to api.tdameritrade.com.
-        symbol (str): Stock symbol to get the option chain for.
+        symbol (str):    Stock symbol to get the option chain for (required).
+        apikey (str):    API key to api.tdameritrade.com (required, can be set in env: TDA_API_KEY).
 
     Returns:
         resp (dict): API response with fundamentals data.
@@ -109,8 +119,8 @@ def get_quote(*args, **kwargs):
     """Get quote for a symbol.
 
     Args:
-        apikey (str):                API key to api.tdameritrade.com.
-        symbol (str):                Stock symbol to get the option chain for.
+        symbol (str):    Stock symbol to get the option chain for (required).
+        apikey (str):    API key to api.tdameritrade.com (required, can be set in env: TDA_API_KEY).
 
     Returns:
         resp (dict): API response with price quote.
