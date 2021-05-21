@@ -1,6 +1,10 @@
+from optlib.api import get_chain, get_historical
+
 from datetime import datetime
+
 import pandas as pd
 import json
+
 
 class Historical:
 
@@ -16,6 +20,10 @@ class Historical:
     @classmethod
     def parse(cls, resp):
         return Historical(resp)
+
+    @classmethod
+    def get(cls, *args, **kwargs):
+        return cls.parse(get_historical(*args, **kwargs))
 
     def to_dataframe(self):
         return pd.DataFrame([c for c in self.candles])
@@ -86,6 +94,10 @@ class OptionChain:
         )
 
     @classmethod
+    def get(cls, *args, **kwargs):
+        return cls.parse(get_chain(*args, **kwargs))
+
+    @classmethod
     def from_json(cls, filepath):
 
         with open(filepath, "r") as f:
@@ -97,11 +109,15 @@ class OptionChain:
     def options(self):
         return list(self)
 
+    @property
+    def expiration_dates(self):
+        return list({opt.expirationDate for opt in self.options})
+
     def to_dataframe(self):
         return pd.DataFrame([opt.to_dict() for opt in self.options])
 
     def __iter__(self):
-        for expiryDate, strikes in self.expDateMap:
-            for strikePrice, data in strikes.items():
+        for _, strikes in self.expDateMap:
+            for _, data in strikes.items():
                 for r in data:
                     yield Option(r)

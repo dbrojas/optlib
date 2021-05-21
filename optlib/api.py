@@ -1,7 +1,10 @@
 from subprocess import check_output
 import json
 
-from optlib.classes import Historical, OptionChain
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 # ------------------------------
 # This class defines the URLs to the implemented endpoints.
@@ -28,6 +31,8 @@ def _test_input(*args, **kwargs):
 def _get(endpoint, *args, **kwargs):
 
     url = "?".join([endpoint, "&".join(f"{k}={v}" for k, v in kwargs.items())])
+    logger.debug("GET", url)
+
     if (resp := json.loads(check_output(["curl", "-gs", url]))).get("error"):
         raise API_InputError("{0}".format(resp["error"]))
 
@@ -61,7 +66,7 @@ def get_chain(*args, **kwargs):
     _test_input(*args, **kwargs)
 
     endpoint = Endpoint.CHAIN
-    return OptionChain.parse(_get(endpoint, *args, **kwargs))
+    return _get(endpoint, *args, **kwargs)
 
 def get_historical(*args, **kwargs):
     """Request historical price data from TDAmeritrade's API.
@@ -83,7 +88,7 @@ def get_historical(*args, **kwargs):
     _test_input(*args, **kwargs)
 
     endpoint = Endpoint.HISTORY.format(kwargs["symbol"])
-    return Historical.parse(_get(endpoint, *args, **kwargs))
+    return _get(endpoint, *args, **kwargs)
 
 def get_fundamental(*args, **kwargs):
     """Retrieve fundamental data.

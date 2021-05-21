@@ -12,15 +12,12 @@ from __future__ import division
 
 # import necessary libaries
 import math
-import logging
 import numpy as np
 from scipy.stats import mvn, norm
 
-logging.basicConfig(
-    format="[%(asctime)s %(levelname)s] %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.INFO
-)
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # This class contains the limits on inputs for GBS models
@@ -146,7 +143,7 @@ def _gbs_test_inputs(option_type, fs, x, t, r, b, v):
 #         b = cost of carry, v = implied volatility
 # Outputs: value, delta, gamma, theta, vega, rho
 def _gbs(option_type, fs, x, t, r, b, v):
-    logging.debug("Debugging Information: _gbs()")
+    logger.debug("Debugging Information: _gbs()")
     # -----------
     # Test Inputs (throwing an exception on failure)
     _gbs_test_inputs(option_type, fs, x, t, r, b, v)
@@ -159,7 +156,7 @@ def _gbs(option_type, fs, x, t, r, b, v):
 
     if option_type == "c":
         # it's a call
-        logging.debug("     Call Option")
+        logger.debug("     Call Option")
         value = fs * math.exp((b - r) * t) * norm.cdf(d1) - x * math.exp(-r * t) * norm.cdf(d2)
         delta = math.exp((b - r) * t) * norm.cdf(d1)
         gamma = math.exp((b - r) * t) * norm.pdf(d1) / (fs * v * t__sqrt)
@@ -169,7 +166,7 @@ def _gbs(option_type, fs, x, t, r, b, v):
         rho = x * t * math.exp(-r * t) * norm.cdf(d2)
     else:
         # it's a put
-        logging.debug("     Put Option")
+        logger.debug("     Put Option")
         value = x * math.exp(-r * t) * norm.cdf(-d2) - (fs * math.exp((b - r) * t) * norm.cdf(-d1))
         delta = -math.exp((b - r) * t) * norm.cdf(-d1)
         gamma = math.exp((b - r) * t) * norm.pdf(d1) / (fs * v * t__sqrt)
@@ -178,8 +175,8 @@ def _gbs(option_type, fs, x, t, r, b, v):
         vega = math.exp((b - r) * t) * fs * t__sqrt * norm.pdf(d1)
         rho = -x * t * math.exp(-r * t) * norm.cdf(-d2)
 
-    logging.debug("     d1= {0}\n     d2 = {1}".format(d1, d2))
-    logging.debug("     delta = {0}\n     gamma = {1}\n     theta = {2}\n     vega = {3}\n     rho={4}".format(delta, gamma,
+    logger.debug("     d1= {0}\n     d2 = {1}".format(d1, d2))
+    logger.debug("     delta = {0}\n     gamma = {1}\n     theta = {2}\n     vega = {3}\n     rho={4}".format(delta, gamma,
                                                                                                         theta, vega,
                                                                                                         rho))
 
@@ -196,17 +193,17 @@ def _gbs(option_type, fs, x, t, r, b, v):
 def _american_option(option_type, fs, x, t, r, b, v):
     # -----------
     # Test Inputs (throwing an exception on failure)
-    logging.debug("Debugging Information: _american_option()")
+    logger.debug("Debugging Information: _american_option()")
     _gbs_test_inputs(option_type, fs, x, t, r, b, v)
 
     # -----------
     if option_type == "c":
         # Call Option
-        logging.debug("     Call Option")
+        logger.debug("     Call Option")
         return _bjerksund_stensland_2002(fs, x, t, r, b, v)
     else:
         # Put Option
-        logging.debug("     Put Option")
+        logger.debug("     Put Option")
 
         # Using the put-call transformation: P(X, FS, T, r, b, V) = C(FS, X, T, -b, r-b, V)
         # WARNING - When reconciling this code back to the B&S paper, the order of variables is different
@@ -237,13 +234,13 @@ def _bjerksund_stensland_1993(fs, x, t, r, b, v):
     rho = my_output[5]
 
     # debugging for calculations
-    logging.debug("-----")
-    logging.debug("Debug Information: _Bjerksund_Stensland_1993())")
+    logger.debug("-----")
+    logger.debug("Debug Information: _Bjerksund_Stensland_1993())")
 
     # if b >= r, it is never optimal to exercise before maturity
     # so we can return the GBS value
     if b >= r:
-        logging.debug("     b >= r, early exercise never optimal, returning GBS value")
+        logger.debug("     b >= r, early exercise never optimal, returning GBS value")
         return e_value, delta, gamma, theta, vega, rho
 
     # Intermediate Calculations
@@ -259,21 +256,21 @@ def _bjerksund_stensland_1993(fs, x, t, r, b, v):
     alpha = (i - x) * (i ** (-beta))
 
     # debugging for calculations
-    logging.debug("     b = {0}".format(b))
-    logging.debug("     v2 = {0}".format(v2))
-    logging.debug("     beta = {0}".format(beta))
-    logging.debug("     b_infinity = {0}".format(b_infinity))
-    logging.debug("     b_zero = {0}".format(b_zero))
-    logging.debug("     h1 = {0}".format(h1))
-    logging.debug("     i  = {0}".format(i))
-    logging.debug("     alpha = {0}".format(alpha))
+    logger.debug("     b = {0}".format(b))
+    logger.debug("     v2 = {0}".format(v2))
+    logger.debug("     beta = {0}".format(beta))
+    logger.debug("     b_infinity = {0}".format(b_infinity))
+    logger.debug("     b_zero = {0}".format(b_zero))
+    logger.debug("     h1 = {0}".format(h1))
+    logger.debug("     i  = {0}".format(i))
+    logger.debug("     alpha = {0}".format(alpha))
 
     # Check for immediate exercise
     if fs >= i:
-        logging.debug("     Immediate Exercise")
+        logger.debug("     Immediate Exercise")
         value = fs - x
     else:
-        logging.debug("     American Exercise")
+        logger.debug("     American Exercise")
         value = (alpha * (fs ** beta)
                  - alpha * _phi(fs, t, beta, i, i, r, b, v)
                  + _phi(fs, t, 1, i, i, r, b, v)
@@ -303,13 +300,13 @@ def _bjerksund_stensland_2002(fs, x, t, r, b, v):
     rho = my_output[5]
 
     # debugging for calculations
-    logging.debug("-----")
-    logging.debug("Debug Information: _Bjerksund_Stensland_2002())")
+    logger.debug("-----")
+    logger.debug("Debug Information: _Bjerksund_Stensland_2002())")
 
     # If b >= r, it is never optimal to exercise before maturity
     # so we can return the GBS value
     if b >= r:
-        logging.debug("     Returning GBS value")
+        logger.debug("     Returning GBS value")
         return e_value, delta, gamma, theta, vega, rho
 
     # -----------
@@ -335,16 +332,16 @@ def _bjerksund_stensland_2002(fs, x, t, r, b, v):
     alpha2 = (i2 - x) * (i2 ** (-beta))
 
     # debugging for calculations
-    logging.debug("     t1 = {0}".format(t1))
-    logging.debug("     beta = {0}".format(beta))
-    logging.debug("     b_infinity = {0}".format(b_infinity))
-    logging.debug("     b_zero = {0}".format(b_zero))
-    logging.debug("     h1 = {0}".format(h1))
-    logging.debug("     h2 = {0}".format(h2))
-    logging.debug("     i1 = {0}".format(i1))
-    logging.debug("     i2 = {0}".format(i2))
-    logging.debug("     alpha1 = {0}".format(alpha1))
-    logging.debug("     alpha2 = {0}".format(alpha2))
+    logger.debug("     t1 = {0}".format(t1))
+    logger.debug("     beta = {0}".format(beta))
+    logger.debug("     b_infinity = {0}".format(b_infinity))
+    logger.debug("     b_zero = {0}".format(b_zero))
+    logger.debug("     h1 = {0}".format(h1))
+    logger.debug("     h2 = {0}".format(h2))
+    logger.debug("     i1 = {0}".format(i1))
+    logger.debug("     i2 = {0}".format(i2))
+    logger.debug("     alpha1 = {0}".format(alpha1))
+    logger.debug("     alpha2 = {0}".format(alpha2))
 
     # check for immediate exercise
     if fs >= i2:
@@ -418,13 +415,13 @@ def _phi(fs, t, gamma, h, i, r, b, v):
 
     phi = math.exp(lambda1 * t) * (fs ** gamma) * (norm.cdf(d1) - ((i / fs) ** kappa) * norm.cdf(d2))
 
-    logging.debug("-----")
-    logging.debug("Debug info for: _phi()")
-    logging.debug("    d1={0}".format(d1))
-    logging.debug("    d2={0}".format(d2))
-    logging.debug("    lambda={0}".format(lambda1))
-    logging.debug("    kappa={0}".format(kappa))
-    logging.debug("    phi={0}".format(phi))
+    logger.debug("-----")
+    logger.debug("Debug info for: _phi()")
+    logger.debug("    d1={0}".format(d1))
+    logger.debug("    d2={0}".format(d2))
+    logger.debug("    lambda={0}".format(lambda1))
+    logger.debug("    kappa={0}".format(kappa))
+    logger.debug("    phi={0}".format(phi))
     return phi
 
 
@@ -519,9 +516,9 @@ def _newton_implied_vol(val_fn, option_type, x, fs, t, b, r, cp, precision=.0000
     value, delta, gamma, theta, vega, rho = val_fn(option_type, fs, x, t, r, b, v)
     min_diff = abs(cp - value)
 
-    logging.debug("-----")
-    logging.debug("Debug info for: _Newton_ImpliedVol()")
-    logging.debug("    Vinitial={0}".format(v))
+    logger.debug("-----")
+    logger.debug("Debug info for: _Newton_ImpliedVol()")
+    logger.debug("    Vinitial={0}".format(v))
 
     # Newton-Raphson Search
     countr = 0
@@ -529,7 +526,7 @@ def _newton_implied_vol(val_fn, option_type, x, fs, t, b, r, cp, precision=.0000
 
         v = v - (value - cp) / vega
         if (v > _GBS_Limits.MAX_V) or (v < _GBS_Limits.MIN_V):
-            logging.debug("    Volatility out of bounds")
+            logger.debug("    Volatility out of bounds")
             break
 
         value, delta, gamma, theta, vega, rho = val_fn(option_type, fs, x, t, r, b, v)
@@ -537,7 +534,7 @@ def _newton_implied_vol(val_fn, option_type, x, fs, t, b, r, cp, precision=.0000
 
         # keep track of how many loops
         countr += 1
-        logging.debug("     IVOL STEP {0}. v={1}".format(countr, v))
+        logger.debug("     IVOL STEP {0}. v={1}".format(countr, v))
 
 
     # check if function converged and return a value
@@ -552,8 +549,8 @@ def _newton_implied_vol(val_fn, option_type, x, fs, t, b, r, cp, precision=.0000
 # ----------
 # Find the Implied Volatility using a Bisection search
 def _bisection_implied_vol(val_fn, option_type, fs, x, t, r, b, cp, precision=.00001, max_steps=100):
-    logging.debug("-----")
-    logging.debug("Debug info for: _bisection_implied_vol()")
+    logger.debug("-----")
+    logger.debug("Debug info for: _bisection_implied_vol()")
 
     # Estimate Upper and Lower bounds on volatility
     # Assume American Implied vol is within +/- 50% of the GBS Implied Vol
@@ -576,8 +573,8 @@ def _bisection_implied_vol(val_fn, option_type, fs, x, t, r, b, cp, precision=.0
     current_step = 0
     diff = abs(cp - cp_mid)
 
-    logging.debug("     American IVOL starting conditions: CP={0} cp_mid={1}".format(cp, cp_mid))
-    logging.debug("     IVOL {0}. V[{1},{2},{3}]".format(current_step, v_low, v_mid, v_high))
+    logger.debug("     American IVOL starting conditions: CP={0} cp_mid={1}".format(cp, cp_mid))
+    logger.debug("     IVOL {0}. V[{1},{2},{3}]".format(current_step, v_low, v_mid, v_high))
 
     # Keep bisection volatility until correct price is found
     while (diff > precision) and (current_step < max_steps):
@@ -599,7 +596,7 @@ def _bisection_implied_vol(val_fn, option_type, fs, x, t, r, b, cp, precision=.0
         cp_mid = val_fn(option_type, fs, x, t, r, b, v_mid)[0]
         diff = abs(cp - cp_mid)
 
-        logging.debug("     IVOL {0}. V[{1},{2},{3}]".format(current_step, v_low, v_mid, v_high))
+        logger.debug("     IVOL {0}. V[{1},{2},{3}]".format(current_step, v_low, v_mid, v_high))
 
     # return output
     if abs(cp - cp_mid) < precision:
