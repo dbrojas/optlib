@@ -1,5 +1,4 @@
-from subprocess import check_output
-import json
+import requests
 import os
 
 import logging
@@ -40,13 +39,9 @@ def _get(endpoint, *args, **kwargs):
     if "apikey" not in kwargs:
         kwargs.update({"apikey": _get_env("TDA_API_KEY")})
 
-    url = "?".join([endpoint, "&".join(f"{k}={v}" for k, v in kwargs.items())])
-    logger.debug("GET", url)
-
-    if (resp := json.loads(check_output(["curl", "-gs", url]))).get("error"):
-        raise API_InputError("{0}".format(resp["error"]))
-
-    return resp
+    r = requests.get(endpoint, params=kwargs)
+    r.raise_for_status()
+    return r.json()
 
 def get_chain(*args, **kwargs):
     """Request an option chain from TDAmeritrade's API.
