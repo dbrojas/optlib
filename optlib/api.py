@@ -39,10 +39,7 @@ def _get(endpoint, *args, **kwargs):
     if "apikey" not in kwargs:
         kwargs.update({"apikey": _get_env("TDA_API_KEY")})
 
-    url = "?".join([endpoint, "&".join(f"{k}={v}" for k, v in kwargs.items())])
-    logger.debug("GET", url)
-
-    r = requests.get(url)
+    r = requests.get(endpoint, params=kwargs)
     r.raise_for_status()
     return r.json()
 
