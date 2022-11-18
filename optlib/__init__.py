@@ -1,2 +1,2 @@
-from .instruments import Historical
+from .instruments import Pricehistory
 from .instruments import OptionChain
